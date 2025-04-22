@@ -1,52 +1,49 @@
 
-import os
-import requests
-from telegram import Bot
+import requests, os, time
+import telegram
 
 TOKEN = os.getenv("TOKEN_TELEGRAM")
 CHAT_ID = os.getenv("CHAT_ID")
 ODDS_API_KEY = os.getenv("ODDS_API_KEY")
-bot = Bot(token=TOKEN)
 
-# Esportes com maior volume de eventos ao vivo + UFC
-ESPORTES = ["soccer", "tennis", "basketball", "table_tennis", "csgo", "volleyball", "cricket", "ufc"]
-CHECK_INTERVAL = 60  # segundos
+bot = telegram.Bot(token=TOKEN)
 
-def buscar_eventos(esporte):
-    url = f"https://api.the-odds-api.com/v4/sports/{esporte}/odds/?regions=eu&markets=h2h&oddsFormat=decimal&apiKey={ODDS_API_KEY}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Erro ao buscar odds de {esporte}: {response.text}")
-        return []
+ESPORTES = ["soccer", "tennis", "basketball", "mma", "boxing", "volleyball", "baseball", "icehockey", "rugby", "tabletennis"]
+ODDS_MIN = 1.70
+ODDS_MAX = 3.50
+URL_BASE = "https://api.the-odds-api.com/v4/sports/{}/odds/?apiKey={}&regions=eu&markets=h2h&oddsFormat=decimal"
 
-def detectar_oportunidade(eventos, esporte):
-    for evento in eventos:
-        time_casa = evento.get("home_team", "Time Casa")
-        time_fora = evento.get("away_team", "Time Visitante")
-        site = next((b for b in evento.get("bookmakers", []) if b.get("title") == "Bet365"), None)
-
-        if site and site.get("markets"):
-            odds = site["markets"][0]["outcomes"]
-            if len(odds) >= 2:
-                odd_casa = odds[0].get("price")
-                odd_fora = odds[1].get("price")
-
-                if odd_casa >= 1.80 and odd_fora >= 1.80:
-                    mensagem = (
-                        f"⚠️ *ALERTA DELAY SNIPER* ⚠️\n"
-                        f"*{time_casa}* x *{time_fora}*\n"
-                        f"🏅 Esporte: *{esporte.upper()}*\n"
-                        f"📊 Odds: {odd_casa} x {odd_fora}"
-                    )
-                    bot.send_message(
-                        chat_id=CHAT_ID,
-                        text=mensagem,
-                        parse_mode='Markdown',
-                        reply_markup={
-                            "inline_keyboard": [
-                                [{"text": "🔗 Apostar Agora!", "url": "https://www.bet365.com/#/IP/B1"}]
-                            ]
-                        }
-                    )
+def iniciar_sniper():
+    while True:
+        try:
+            for esporte in ESPORTES:
+                url = URL_BASE.format(esporte, ODDS_API_KEY)
+                r = requests.get(url)
+                if r.status_code == 200:
+                    for jogo in r.json():
+                        teams = jogo.get("teams", ["Time A", "Time B"])
+                        site = next((s for s in jogo.get("bookmakers", []) if s["title"] == "Bet365"), None)
+                        if not site: continue
+                        mercados = site["markets"][0]["outcomes"]
+                        for outcome in mercados:
+                            if ODDS_MIN <= outcome["price"] <= ODDS_MAX:
+                                mensagem = (
+                                    f"⚠️ *Alerta de ODD Real*
+"
+                                    f"🏆 Esporte: {esporte.capitalize()}
+"
+                                    f"🆚 Jogo: {teams[0]} x {teams[1]}
+"
+                                    f"📈 Aposta: {outcome['name']}
+"
+                                    f"💸 Odd: *{outcome['price']}*
+"
+                                )
+                                bot.send_message(chat_id=CHAT_ID, text=mensagem, parse_mode="Markdown", reply_markup=telegram.InlineKeyboardMarkup(
+                                    [[telegram.InlineKeyboardButton("🔗 Apostar na Bet365", url="https://www.bet365.com/#/IP/B1")]]
+                                ))
+                time.sleep(1)
+            time.sleep(60)
+        except Exception as e:
+            print("[Erro sniper]", e)
+            time.sleep(10)
