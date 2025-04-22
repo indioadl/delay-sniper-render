@@ -1,16 +1,25 @@
 
 from telegram import Update, Bot
-from telegram.ext import CommandHandler, Dispatcher, CallbackContext
+from telegram.ext import CommandHandler, CallbackContext
 import os
 
 TOKEN = os.getenv("TOKEN_TELEGRAM")
-CHAT_ID = os.getenv("CHAT_ID")
-
-bot = Bot(token=TOKEN)
-dispatcher = Dispatcher(bot=bot, update_queue=None, workers=0, use_context=True)
 
 def start(update: Update, context: CallbackContext):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Bot Delay Sniper ativo!")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="🤖 Bot Delay Sniper via Webhook ativo!")
 
-def iniciar_comandos_telegram():
-    dispatcher.add_handler(CommandHandler("start", start))
+def status(update: Update, context: CallbackContext):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="✅ Status: Online e monitorando oportunidades!")
+
+def ajuda(update: Update, context: CallbackContext):
+    comandos = (
+        "/start - Inicia o bot\n"
+        "/status - Verifica se o sniper está ativo\n"
+        "/ajuda - Mostra os comandos disponíveis"
+    )
+    context.bot.send_message(chat_id=update.effective_chat.id, text=comandos)
+
+def iniciar_comandos_telegram(dp):
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("status", status))
+    dp.add_handler(CommandHandler("ajuda", ajuda))
