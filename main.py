@@ -3,7 +3,7 @@ from flask import Flask, request, render_template
 import os
 import telegram
 from telegram.ext import Dispatcher, CommandHandler
-from comandos_telegram import start, help_command, esportes_command
+from comandos_telegram import start, help_command, esportes_command, ultimos, status, parar, oddsatual
 from delay_sniper_odds import iniciar_sniper
 from threading import Thread
 
@@ -12,10 +12,14 @@ bot = telegram.Bot(token=TOKEN)
 app = Flask(__name__)
 dispatcher = Dispatcher(bot=bot, update_queue=None, workers=0, use_context=True)
 
-# Comandos
+# Handlers
 dispatcher.add_handler(CommandHandler("start", start))
 dispatcher.add_handler(CommandHandler("help", help_command))
 dispatcher.add_handler(CommandHandler("esportes", esportes_command))
+dispatcher.add_handler(CommandHandler("ultimos", ultimos))
+dispatcher.add_handler(CommandHandler("status", status))
+dispatcher.add_handler(CommandHandler("parar", parar))
+dispatcher.add_handler(CommandHandler("oddsatual", oddsatual))
 
 @app.route("/")
 def home():
