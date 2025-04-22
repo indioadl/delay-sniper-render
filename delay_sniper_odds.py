@@ -1,7 +1,5 @@
-import time
-import os
+def buscar_eventos(esporte):
+    return []  # Simulação (substituir com lógica real)
 
-def iniciar_sniper():
-    while True:
-        print("Sniper rodando...")
-        time.sleep(60)
+def detectar_oportunidade(dados, esporte):
+    pass
