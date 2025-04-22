@@ -5,8 +5,17 @@ import os
 
 TOKEN = os.getenv("TOKEN_TELEGRAM")
 
-# Valores fixos (podem ser importados de config no futuro)
-ESPORTES = ["soccer", "tennis", "basketball"]
+# Lista atualizada com todos os esportes de alto volume + UFC
+ESPORTES = [
+    "soccer",
+    "tennis",
+    "basketball",
+    "table_tennis",
+    "csgo",
+    "volleyball",
+    "cricket",
+    "ufc"
+]
 ODDS_MINIMA = 1.80
 
 def start(update: Update, context: CallbackContext):
@@ -32,7 +41,7 @@ def ajuda(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id, text=comandos, parse_mode='Markdown')
 
 def esportes(update: Update, context: CallbackContext):
-    lista = "\n".join([f"• {e.capitalize()}" for e in ESPORTES])
+    lista = "\n".join([f"• {e.replace('_', ' ').title()}" for e in ESPORTES])
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"🎯 Esportes monitorados:
 {lista}")
 
