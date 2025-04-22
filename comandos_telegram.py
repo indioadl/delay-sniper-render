@@ -5,7 +5,6 @@ import os
 
 TOKEN = os.getenv("TOKEN_TELEGRAM")
 
-# Lista atualizada com todos os esportes de alto volume + UFC
 ESPORTES = [
     "soccer",
     "tennis",
@@ -26,24 +25,18 @@ def status(update: Update, context: CallbackContext):
 
 def ajuda(update: Update, context: CallbackContext):
     comandos = (
-        "*Comandos disponíveis:*
-"
-        "/start - Inicia o bot
-"
-        "/status - Verifica se o sniper está ativo
-"
-        "/ajuda - Mostra os comandos disponíveis
-"
-        "/esportes - Esportes monitorados
-"
+        "*Comandos disponíveis:*\n"
+        "/start - Inicia o bot\n"
+        "/status - Verifica se o sniper está ativo\n"
+        "/ajuda - Mostra os comandos disponíveis\n"
+        "/esportes - Esportes monitorados\n"
         "/odds - Odds mínimas configuradas"
     )
     context.bot.send_message(chat_id=update.effective_chat.id, text=comandos, parse_mode='Markdown')
 
 def esportes(update: Update, context: CallbackContext):
     lista = "\n".join([f"• {e.replace('_', ' ').title()}" for e in ESPORTES])
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"🎯 Esportes monitorados:
-{lista}")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"🎯 Esportes monitorados:\n{lista}")
 
 def odds(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"📊 Odds mínimas configuradas: {ODDS_MINIMA}")
