@@ -2,54 +2,51 @@
 from telegram import Update
 from telegram.ext import CallbackContext
 import time
-import os
 
-# Variáveis globais de estado do bot
 ULTIMOS_ALERTAS = []
 STATUS_BOT = {"ativo": True, "ultimo_alerta": "Nenhum alerta ainda"}
 
 def start(update: Update, context: CallbackContext):
-    update.message.reply_text("🤖 Bem-vindo ao Delay Sniper Bot! Use /help para ver os comandos disponíveis.")
+    update.message.reply_text("Bem-vindo ao Delay Sniper Bot! Use /help para ver os comandos disponíveis.")
 
 def help_command(update: Update, context: CallbackContext):
-    update.message.reply_text("""📌 Comandos disponíveis:
-/start – Inicia o bot
-/help – Mostra os comandos
-/esportes – Lista os esportes monitorados
-/ultimos – Mostra os últimos alertas enviados
-/status – Mostra o status atual do bot
-/parar – Pausa temporariamente o sniper
-/oddsatual – Retorna a odd atual de um jogo (em construção)
-""")
+    texto = (
+        "/start - Inicia o bot\n"
+        "/help - Mostra os comandos disponíveis\n"
+        "/esportes - Lista os esportes monitorados\n"
+        "/ultimos - Mostra os últimos alertas enviados\n"
+        "/status - Mostra o status atual do bot\n"
+        "/parar - Pausa temporariamente o sniper\n"
+        "/oddsatual - Consulta odds em breve (em construção)"
+    )
+    update.message.reply_text(texto)
 
 def esportes_command(update: Update, context: CallbackContext):
     esportes = [
-        "⚽ Soccer", "🎾 Tennis", "🏀 Basketball", "🥊 MMA", "🥋 Boxing",
-        "🏐 Volleyball", "⚾ Baseball", "🏒 Ice Hockey", "🏉 Rugby", "🏓 Table Tennis"
+        "Soccer", "Tennis", "Basketball", "MMA", "Boxing",
+        "Volleyball", "Baseball", "Ice Hockey", "Rugby", "Table Tennis"
     ]
-    update.message.reply_text("📊 Esportes monitorados:
-" + "\n".join(esportes))
+    update.message.reply_text("Esportes monitorados:\n" + "\n".join(esportes))
 
 def ultimos(update: Update, context: CallbackContext):
     if ULTIMOS_ALERTAS:
         mensagens = "\n\n".join(ULTIMOS_ALERTAS[-5:])
-        update.message.reply_text(f"📩 Últimos alertas:\n\n{mensagens}")
+        update.message.reply_text("Últimos alertas:\n\n" + mensagens)
     else:
-        update.message.reply_text("⛔ Ainda não houve alertas.")
+        update.message.reply_text("Ainda não houve alertas.")
 
 def status(update: Update, context: CallbackContext):
-    estado = "🟢 Ativo" if STATUS_BOT["ativo"] else "🔴 Pausado"
+    estado = "Ativo" if STATUS_BOT["ativo"] else "Pausado"
     ultimo = STATUS_BOT["ultimo_alerta"]
-    update.message.reply_text(f"📡 Status do Bot: {estado}\n⏱️ Último alerta: {ultimo}")
+    update.message.reply_text(f"Status do Bot: {estado}\nÚltimo alerta: {ultimo}")
 
 def parar(update: Update, context: CallbackContext):
     STATUS_BOT["ativo"] = False
-    update.message.reply_text("⛔ Delay Sniper pausado temporariamente.")
+    update.message.reply_text("Delay Sniper pausado temporariamente.")
 
 def oddsatual(update: Update, context: CallbackContext):
-    update.message.reply_text("🔎 Esse comando ainda está em construção. Em breve você poderá consultar odds específicas!")
+    update.message.reply_text("Esse comando ainda está em construção. Em breve você poderá consultar odds específicas.")
 
-# Funções para serem usadas no delay_sniper_odds.py
 def salvar_alerta(mensagem):
     ULTIMOS_ALERTAS.append(mensagem)
     STATUS_BOT["ultimo_alerta"] = time.strftime('%H:%M:%S')
