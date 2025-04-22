@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Delay Sniper Painel</title>
+    <style>
+        body { font-family: Arial; background: #121212; color: #f1f1f1; padding: 20px; }
+        h1 { color: #00ff88; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #444; padding: 10px; text-align: left; }
+        th { background: #222; }
+        tr:nth-child(even) { background: #1d1d1d; }
+    </style>
+</head>
+<body>
+    <h1>🧠 Painel Delay Sniper</h1>
+    <table>
+        <tr>
+            <th>Esporte</th>
+            <th>Time Casa</th>
+            <th>Visitante</th>
+            <th>Placar</th>
+            <th>Odd</th>
+            <th>Horário</th>
+        </tr>
+        {% for alerta in alertas %}
+        <tr>
+            <td>{{ alerta[0] }}</td>
+            <td>{{ alerta[1] }}</td>
+            <td>{{ alerta[2] }}</td>
+            <td>{{ alerta[3] }}</td>
+            <td>{{ alerta[4] }}</td>
+            <td>{{ alerta[5] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
